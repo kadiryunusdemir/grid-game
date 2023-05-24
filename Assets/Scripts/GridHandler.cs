@@ -29,8 +29,9 @@ public class GridHandler : MonoBehaviour
                 float xPos = (i - (tileNumber - 1) * 0.5f) * _tileSize;
                 float yPos = (j - (tileNumber - 1) * 0.5f) * _tileSize;
                 GameObject tile = Instantiate(tilePrefab, new Vector3(xPos, yPos), Quaternion.identity);
-                
                 tile.name = "Tile " + i + "-" + j;
+
+                tile.GetComponent<SpriteRenderer>().enabled = false;
     
                 // set tile's parent as grid to create hierarchy
                 tile.transform.parent = transform; 
