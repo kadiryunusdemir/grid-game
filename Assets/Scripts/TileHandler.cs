@@ -19,7 +19,6 @@ public class TileHandler : MonoBehaviour
         else if (!_renderer.enabled)
         {
             _renderer.enabled = true;
-            Debug.Log(position);
             GridHandler.Instance.CheckNeighbors(position);
         }
     }

@@ -1,10 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class GridHandler : MonoBehaviour
 {
     [SerializeField] private GameObject tilePrefab;
-    [SerializeField] private int tileNumber;
+    [SerializeField] private TMP_InputField tileNumber;
+    [SerializeField] private TextMeshProUGUI errorMessage;
+    [SerializeField] private GameObject canvas;
+    private int _tileNumber;
     private float _tileSize;
     private float _gridSize;
     private Dictionary<Vector2, SpriteRenderer> _tileRenderers;
@@ -18,27 +23,36 @@ public class GridHandler : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    void Start()
+    public void SetGridNumber()
+    {
+        // try to get grid number from user
+        if (String.IsNullOrEmpty(tileNumber.text) || !int.TryParse(tileNumber.text, out _tileNumber))
+        {
+            errorMessage.gameObject.SetActive(true);
+            return;
+        }
+        
+        // start the game
+        canvas.SetActive(false);
+        InitializeGrid();
+    }
+    
+    // create a n x n grid using maximum screen space
+    void InitializeGrid()
     {
         _tileRenderers = new Dictionary<Vector2, SpriteRenderer>();
         
         Vector2 tileBoundsSize = tilePrefab.GetComponent<BoxCollider2D>().size;
         _tileSize = tileBoundsSize.x;
-        _gridSize = _tileSize * tileNumber;
+        _gridSize = _tileSize * _tileNumber;
         
-        InitializeGrid();
-    }
-
-    // create a n x n grid using maximum screen space
-    void InitializeGrid()
-    {
-        for (int i = 0; i < tileNumber; i++)
+        for (int i = 0; i < _tileNumber; i++)
         {
-            for (int j = 0; j < tileNumber; j++)
+            for (int j = 0; j < _tileNumber; j++)
             {
                 // calculate the position and create the tile
-                float xPos = (i - (tileNumber - 1) * 0.5f) * _tileSize;
-                float yPos = (j - (tileNumber - 1) * 0.5f) * _tileSize;
+                float xPos = (i - (_tileNumber - 1) * 0.5f) * _tileSize;
+                float yPos = (j - (_tileNumber - 1) * 0.5f) * _tileSize;
                 GameObject tile = Instantiate(tilePrefab, new Vector3(xPos, yPos), Quaternion.identity);
                 
                 // give position values to tile's handler
@@ -59,15 +73,18 @@ public class GridHandler : MonoBehaviour
             }
         }
         
-        // the height of the window seen by the camera
-        float height = Camera.main.orthographicSize * 2;
-        // the width of the window with aspect ratio
-        float width = height * Screen.width/ Screen.height;
-        float maxSize = height < width ? height : width;
+        if (Camera.main != null)
+        {
+            // the height of the window seen by the camera
+            float height = Camera.main.orthographicSize * 2;
+            // the width of the window with aspect ratio
+            float width = height * Screen.width/ Screen.height;
+            float maxSize = height < width ? height : width;
         
-        // rescale whole grid using maximum screen space
-        float scale = maxSize / (_gridSize + _tileSize);
-        transform.localScale = new Vector3(scale,scale, 1f);
+            // rescale whole grid using maximum screen space
+            float scale = maxSize / (_gridSize + _tileSize);
+            transform.localScale = new Vector3(scale,scale, 1f);
+        }
     }
 
     // check and destroy connected tiles if connected tiles number is at least 3
