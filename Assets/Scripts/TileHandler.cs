@@ -3,6 +3,8 @@
 public class TileHandler : MonoBehaviour
 {
     private SpriteRenderer _renderer;
+    public Vector2 position;
+    
     private void Start()
     {
         _renderer = GetComponent<SpriteRenderer>();
@@ -17,6 +19,8 @@ public class TileHandler : MonoBehaviour
         else if (!_renderer.enabled)
         {
             _renderer.enabled = true;
+            Debug.Log(position);
+            GridHandler.Instance.CheckNeighbors(position);
         }
     }
 
