@@ -30,7 +30,7 @@ public class GridHandler : MonoBehaviour
     public void SetGridNumber()
     {
         // try to get grid number from user
-        if (String.IsNullOrEmpty(tileNumber.text) || !int.TryParse(tileNumber.text, out _tileNumber))
+        if (String.IsNullOrEmpty(tileNumber.text) || !int.TryParse(tileNumber.text, out _tileNumber) || _tileNumber < 3)
         {
             errorMessage.gameObject.SetActive(true);
             return;
