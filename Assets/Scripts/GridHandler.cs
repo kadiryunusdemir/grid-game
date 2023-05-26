@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -8,10 +9,13 @@ public class GridHandler : MonoBehaviour
     [SerializeField] private GameObject tilePrefab;
     [SerializeField] private TMP_InputField tileNumber;
     [SerializeField] private TextMeshProUGUI errorMessage;
-    [SerializeField] private GameObject canvas;
+    [SerializeField] private GameObject starterPanel;
+    [SerializeField] private GameObject gamePanel;
+    [SerializeField] private TextMeshProUGUI score;
     private int _tileNumber;
     private float _tileSize;
     private float _gridSize;
+    private int _score;
     private Dictionary<Vector2, SpriteRenderer> _tileRenderers;
 
     public static GridHandler Instance { get; private set; }
@@ -20,9 +24,9 @@ public class GridHandler : MonoBehaviour
     {
         // use singleton to access GridHandler form TileHandler
         Instance = this;
+        _score = 0;
     }
 
-    // Start is called before the first frame update
     public void SetGridNumber()
     {
         // try to get grid number from user
@@ -33,7 +37,9 @@ public class GridHandler : MonoBehaviour
         }
         
         // start the game
-        canvas.SetActive(false);
+        starterPanel.SetActive(false);
+        score.text = _score.ToString();
+        gamePanel.SetActive(true);
         InitializeGrid();
     }
     
@@ -82,7 +88,7 @@ public class GridHandler : MonoBehaviour
             float maxSize = height < width ? height : width;
         
             // rescale whole grid using maximum screen space
-            float scale = maxSize / (_gridSize + _tileSize);
+            float scale = maxSize / (_gridSize + _tileSize * 2); // give margin
             transform.localScale = new Vector3(scale,scale, 1f);
         }
     }
@@ -104,15 +110,26 @@ public class GridHandler : MonoBehaviour
     
         if (validNeighbors.Count >= 3)
         {
-            // disable all connected tiles
-            foreach (var tilePosition in validNeighbors)
+            StartCoroutine(DeactivateTiles(validNeighbors));
+        }
+    }
+    
+    // wait to disable connected tiles
+    IEnumerator DeactivateTiles(HashSet<Vector2> validNeighbors)
+    {
+        yield return new WaitForSeconds(0.3f);
+
+        // disable all connected tiles
+        foreach (var tilePosition in validNeighbors)
+        {
+            if (_tileRenderers.TryGetValue(tilePosition, out SpriteRenderer tile))
             {
-                if (_tileRenderers.TryGetValue(tilePosition, out SpriteRenderer tile))
-                {
-                    tile.enabled = false;
-                }
+                tile.enabled = false;
             }
         }
+
+        _score += validNeighbors.Count;
+        score.text = _score.ToString();
     }
     
     // search connected neighbors for searchPosition
