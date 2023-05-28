@@ -15,7 +15,7 @@ public class GridHandler : MonoBehaviour
     private int _tileNumber;
     private float _tileSize;
     private float _gridSize;
-    private int _score;
+    // private int _score;
     private Dictionary<Vector2, SpriteRenderer> _tileRenderers;
 
     public static GridHandler Instance { get; private set; }
@@ -24,7 +24,7 @@ public class GridHandler : MonoBehaviour
     {
         // use singleton to access GridHandler form TileHandler
         Instance = this;
-        _score = 0;
+        // _score = 0;
     }
 
     public void SetGridNumber()
@@ -38,9 +38,10 @@ public class GridHandler : MonoBehaviour
         
         // start the game
         starterPanel.SetActive(false);
-        score.text = _score.ToString();
+        // score.text = _score.ToString();
         gamePanel.SetActive(true);
         InitializeGrid();
+        Timer.Instance.StartTheTimer();
     }
     
     // create a n x n grid using maximum screen space
@@ -128,8 +129,8 @@ public class GridHandler : MonoBehaviour
             }
         }
 
-        _score += validNeighbors.Count;
-        score.text = _score.ToString();
+        // _score += validNeighbors.Count;
+        // score.text = _score.ToString();
     }
     
     // search connected neighbors for searchPosition
@@ -172,5 +173,21 @@ public class GridHandler : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void SetTheScore()
+    {
+        float activeTiles = 0;
+
+        foreach (var tile in _tileRenderers)
+        {
+            if (tile.Value.enabled)
+            {
+                activeTiles++;
+            }
+        }
+
+        float percentage = activeTiles / (_tileNumber * _tileNumber);
+        score.text = percentage.ToString("%0.00");
     }
 }
