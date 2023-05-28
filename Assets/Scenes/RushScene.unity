@@ -549,7 +549,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4edc1f838f59141c09b1273e43ad4b6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  countdownTime: 10
+  countdownTime: 60
   timerText: {fileID: 1914935722}
   scorePanel: {fileID: 876894500}
   grid: {fileID: 1170927748}
