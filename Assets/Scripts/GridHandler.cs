@@ -187,7 +187,40 @@ public class GridHandler : MonoBehaviour
             }
         }
 
-        float percentage = activeTiles / (_tileNumber * _tileNumber);
+        int possibleMaxTiles = 0;
+
+        int xAxis = _tileNumber;
+        int xAxisCounter = 0;
+        while (xAxis >= 2)
+        {
+            xAxis -= 2;
+            xAxisCounter++;
+        }
+        if (xAxis == 1)
+        {
+            xAxisCounter++;
+        }
+        
+        int yAxis = _tileNumber;
+        int yAxisCounter = 0;
+        while (yAxis >= 3)
+        {
+            yAxis -= 3;
+            yAxisCounter += 2;
+        }
+        if (yAxis == 2)
+        {
+            yAxisCounter += 2;
+        }
+
+        possibleMaxTiles = xAxisCounter * yAxisCounter;
+        
+        if (xAxis == 1)
+        {
+            possibleMaxTiles += yAxisCounter + 1;
+        } 
+        
+        float percentage = activeTiles / possibleMaxTiles;
         score.text = percentage.ToString("%0.00");
     }
 }
